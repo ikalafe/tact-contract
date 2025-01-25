@@ -1,8 +1,14 @@
 import "@stdlib/deploy";
+message Add {
+    amount: Int as uint32;
+}
 
 contract FirstTactContract with Deployable {
-    counter: Int as uint32;
-    init(){
+    id: Int as uint32;
+    counter: Int as uint32; // 2**32 == 4294967296
+
+    init(id: Int){
+        self.id = id;
         self.counter = 0;
     }
 
@@ -10,7 +16,15 @@ contract FirstTactContract with Deployable {
         self.counter += 1;
     }
 
+    receive(msg: Add){
+        self.counter += msg.amount;
+    }
+
     get fun counter(): Int {
         return self.counter;
+    }
+
+    get fun id(): Int {
+        return self.id;
     }
 }
