@@ -11,7 +11,7 @@ describe('FirstTactContract', () => {
     beforeEach(async () => {
         blockchain = await Blockchain.create();
 
-        firstTactContract = blockchain.openContract(await FirstTactContract.fromInit());
+        firstTactContract = blockchain.openContract(await FirstTactContract.fromInit(42151n));
 
         deployer = await blockchain.treasury('deployer');
 
@@ -47,6 +47,25 @@ describe('FirstTactContract', () => {
 
         const counterAfter = await firstTactContract.getCounter();
         console.log('CounterAfter -', counterAfter);
+
+        expect(counterBefore).toBeLessThan(counterAfter);
+    });
+
+    it('should increase with amount', async () => {
+        const counterBefore = await firstTactContract.getCounter();
+        const amount = 5n;
+
+        console.log('counterBefore -', counterBefore);
+
+        await firstTactContract.send(
+            deployer.getSender(),
+            { value: toNano('0.02') },
+            { $$type: 'Add', amount: amount },
+        );
+
+        const counterAfter = await firstTactContract.getCounter();
+
+        console.log('counterAfter -', counterAfter);
 
         expect(counterBefore).toBeLessThan(counterAfter);
     });
